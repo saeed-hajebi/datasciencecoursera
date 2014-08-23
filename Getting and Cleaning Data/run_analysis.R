@@ -1,5 +1,5 @@
 rm(list=ls());
-# Donload file, save it, and unzip it
+# Download file, save it, and unzip it
 if(!file.exists("data")) {dir.create("data")};
 fileURL = "https://d396qusza40orc.cloudfront.net/getdata%2Fprojectfiles%2FUCI%20HAR%20Dataset.zip";
 file = paste("data",'/',"getdata_projectfiles_UCI HAR Dataset.zip", sep="");

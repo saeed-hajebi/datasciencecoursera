@@ -1,0 +1,2 @@
+The Code is documented and the varaiable names are self-describing. 
+It creates a directory called "data" in the current working direcory, download the data and unzip it, and then dose all the required data processing.
