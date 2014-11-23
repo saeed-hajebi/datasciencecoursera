@@ -26,93 +26,39 @@ set.seed(184);
 ```
 library(caret);
 ```
-##Partition training data into train and evaluation sets
-Partitioning training data into training (75%) and evaluation (25%) sets:
-```
-inTrain = createDataPartition(training$classe, p = 3/4, list = F);
-trainData = training[ inTrain,];
-evalData  = training[-inTrain,];
-```
 
 ##Model fitting
-I use Generalized Boosted Regression Models, and try to predict 'classe' based on other variables.
+I used random forrets to predict variable 'classe' based on other variables. I did a 5-fold corss-validation:
 ```
-model = train(classe ~ ., data = trainData, 
-              method = 'gbm', verbose=FALSE);
+trainCtrl = trainControl(method = 'cv', number = 5);
+
+model = train(classe ~ ., 
+              data = trainData, 
+              method = 'rf',
+              trControl = trainCtrl);
+
+print(model)
+print(model$finalModel)
+randomForest(x = x, y = y, mtry = param$mtry) 
+               Type of random forest: classification
+                     Number of trees: 500
+No. of variables tried at each split: 6952
+
+        OOB estimate of  error rate: 1.25%
+Confusion matrix:
+   A  B  C  D  E class.error
+A 91  0  0  0  0  0.00000000
+B  0 62  1  0  0  0.01587302
+C  0  1 56  0  0  0.01754386
+D  0  0  0 55  1  0.01785714
+E  0  0  0  1 53  0.01851852
+
 ```
-##Understanig the most important variables
-```
-impVars = varImp(model);
+As it can be seen, the OOB (Out of Bag/Out of Sample) estimate of error rate is 1.25%, which is very good.
 
-gbm variable importance
-
-  only 20 most important variables shown (out of 32)
-
-                Overall
-roll_belt       100.000
-yaw_belt         55.587
-roll_dumbbell    26.461
-magnet_belt_z    25.962
-pitch_belt       25.748
-accel_arm_x      17.797
-magnet_arm_x     16.409
-magnet_arm_z     15.292
-gyros_belt_z     12.668
-roll_arm         12.407
-user_nameeurico  11.280
-pitch_dumbbell   10.538
-yaw_dumbbell     10.099
-yaw_arm           9.169
-accel_arm_z       9.112
-magnet_belt_x     7.189
-accel_belt_z      7.055
-pitch_arm         5.918
-magnet_belt_y     5.778
-gyros_arm_y       5.767
-
-
-plot(varImp(model));
-```
-##Evaluating the model using the evaluation data (25% of the training set)
-```
-predictions = predict(model, newdata = evalData);
-confusionMatrix(predictions, evalData$classe);
-
-Confusion Matrix and Statistics
-
-          Reference
-Prediction    A    B    C    D    E
-         A 1286   52   16   23   16
-         B   30  855   40   10   17
-         C   34   31  771   33    6
-         D   31    5   25  729    8
-         E   14    6    3    9  854
-
-Overall Statistics
-                                          
-               Accuracy : 0.9166          
-                 95% CI : (0.9085, 0.9242)
-    No Information Rate : 0.2845          
-    P-Value [Acc > NIR] : < 2.2e-16       
-                                          
-                  Kappa : 0.8945          
- Mcnemar's Test P-Value : 0.007784        
-
-Statistics by Class:
-
-                     Class: A Class: B Class: C Class: D Class: E
-Sensitivity            0.9219   0.9009   0.9018   0.9067   0.9478
-Specificity            0.9695   0.9755   0.9743   0.9832   0.9920
-Pos Pred Value         0.9232   0.8981   0.8811   0.9135   0.9639
-Neg Pred Value         0.9690   0.9762   0.9792   0.9817   0.9883
-Prevalence             0.2845   0.1935   0.1743   0.1639   0.1837
-Detection Rate         0.2622   0.1743   0.1572   0.1487   0.1741
-Detection Prevalence   0.2841   0.1941   0.1784   0.1627   0.1807
-Balanced Accuracy      0.9457   0.9382   0.9380   0.9449   0.9699
-```
 ##Testing the model using the test set
 ```
-tests = predict(model, newdata = testing)
+tests = predict(model, newdata = testing);
 
 pml_write_files = function(x){
   n = length(x)
@@ -122,6 +68,6 @@ pml_write_files = function(x){
   }
 }
 
-pml_write_files(tests)
+pml_write_files(tests);
 ```
 

@@ -13,21 +13,16 @@ set.seed(184)
 
 library(caret)
 
-inTrain = createDataPartition(training$classe, p = 3/4, list = F)
-trainData = training[ inTrain,]
-evalData  = training[-inTrain,]
-
 #Mode fitting
-model = train(classe ~ ., data = trainData, 
-              method = 'gbm', verbose=FALSE);
+trainCtrl = trainControl(method = 'cv', number = 5);
 
-#Find the most important variables
-plot(varImp(model))
+model = train(classe ~ ., 
+              data = training, 
+              method = 'rf',
+              trControl = trainCtrl);
 
-#Model evaluation
-predictions = predict(model, newdata = evalData);
-
-confusionMatrix(predictions, evalData$classe)
+print(model)
+print(model$finalModel)
 
 #Test the moedl
 tests = predict(model, newdata = testing)
